@@ -7,6 +7,7 @@ from PIL import Image
 import message_filters
 import numpy
 import rospy
+import collections
 from cv_bridge import CvBridge
 from keras.models import load_model
 from keras.preprocessing.image import img_to_array
@@ -23,6 +24,9 @@ class TrafficClassifier:
 
   model = None
   last_published_prediction = UNKNOWN
+
+  # Remove signal outliers
+  detection_queue = collections.deque(maxlen=10)
 
   def __init__(self):
     rospy.init_node('traffic_light_classifier')
@@ -70,6 +74,14 @@ class TrafficClassifier:
     else:
       return self.UNKNOWN
 
+  def most_common_prediction(self, prediction):
+    self.detection_queue.append(prediction)
+    try:
+      counter = collections.Counter(self.detection_queue)
+      return counter.most_common(1)[0][0]
+    except IndexError:
+      return prediction
+
   def get_model(self):
     # TODO Fix: Must load model from ROS callback thread
     if not self.model:
@@ -101,7 +113,7 @@ class TrafficClassifier:
 
   def publish_prediction(self, prediction):
     # Publish the prediction
-    if prediction != self.last_published_prediction:
+    if self.most_common_prediction(prediction) != self.last_published_prediction:
       self.light_detected_publisher.publish(traffic_light(traffic_light=prediction))
       self.last_published_prediction = prediction
 
