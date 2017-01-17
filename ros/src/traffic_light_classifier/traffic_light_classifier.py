@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import numpy
-import sys
 import PIL
-import message_filters
-import rospy
-
+import sys
 from PIL import Image
+
+import message_filters
+import numpy
+import rospy
 from cv_bridge import CvBridge
 from keras.models import load_model
 from keras.preprocessing.image import img_to_array
@@ -22,6 +22,7 @@ class TrafficClassifier:
   RADIUS_MULTIPLIER = 6
 
   model = None
+  last_published_prediction = UNKNOWN
 
   def __init__(self):
     rospy.init_node('traffic_light_classifier')
@@ -78,7 +79,7 @@ class TrafficClassifier:
   def detect_signal(self, signal, image):
     if len(signal.Signals) == 0:
       # No signals are visible
-      self.light_detected_publisher.publish(traffic_light(traffic_light=self.UNKNOWN))
+      self.publish_prediction(self.UNKNOWN)
       return
 
     # Convert the image to PIL
@@ -96,8 +97,13 @@ class TrafficClassifier:
     # Run the cropped image through the NN
     prediction = self.predict_light(cropped_roi)
 
+    self.publish_prediction(prediction)
+
+  def publish_prediction(self, prediction):
     # Publish the prediction
-    self.light_detected_publisher.publish(traffic_light(traffic_light=prediction))
+    if prediction != self.last_published_prediction:
+      self.light_detected_publisher.publish(traffic_light(traffic_light=prediction))
+      self.last_published_prediction = prediction
 
 
 if __name__ == '__main__':
