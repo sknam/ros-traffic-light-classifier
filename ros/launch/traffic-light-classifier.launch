@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="traffic_light_classifier" type="traffic_light_classifier.py" name="traffic_light_classifier">
+        <param name="model" value="$(find traffic_light_classifier)/light_classifier_model.h5"/>
+    </node>
+</launch>
