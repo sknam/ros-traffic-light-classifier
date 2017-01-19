@@ -23,6 +23,7 @@ class TrafficClassifier:
   RADIUS_MULTIPLIER = 6
 
   model = None
+  model_path = None
   last_published_prediction = UNKNOWN
 
   # Remove signal outliers
@@ -30,6 +31,11 @@ class TrafficClassifier:
 
   def __init__(self):
     rospy.init_node('traffic_light_classifier')
+
+    if not rospy.has_param('~model'):
+      raise StandardError("Mode param missing: Includes path to Keras model.")
+
+    self.model_path = rospy.get_param('~model')
 
     roi_signal = message_filters.Subscriber('roi_signal', Signals)
     camera_image = message_filters.Subscriber('image_raw', Image)
@@ -85,7 +91,7 @@ class TrafficClassifier:
   def get_model(self):
     # TODO Fix: Must load model from ROS callback thread
     if not self.model:
-      self.model = load_model('light_classifier_model.h5')
+      self.model = load_model(self.model_path)
     return self.model
 
   def detect_signal(self, signal, image):
