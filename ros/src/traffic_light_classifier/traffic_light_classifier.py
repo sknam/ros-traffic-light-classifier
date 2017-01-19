@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import PIL
-import sys
 from PIL import Image
 
 import message_filters
@@ -44,29 +43,6 @@ class TrafficClassifier:
 
     time_sync = message_filters.ApproximateTimeSynchronizer([roi_signal, camera_image], 5, .1)
     time_sync.registerCallback(self.detect_signal)
-
-  def calculate_bounds(self, signal):
-    xmin = sys.maxint
-    xmax = -sys.maxint - 1
-    ymin = sys.maxint
-    ymax = -sys.maxint - 1
-    radius_max = 0
-
-    for signal in signal.Signals:
-      x = signal.u
-      y = signal.v
-      radius_max = max(radius_max, signal.radius)
-      xmin = min(xmin, x)
-      xmax = max(xmax, x)
-      ymin = min(ymin, y)
-      ymax = max(ymax, y)
-
-    return int(xmin - self.RADIUS_MULTIPLIER * radius_max), int(xmax + self.RADIUS_MULTIPLIER * radius_max), int(
-      ymin - self.RADIUS_MULTIPLIER * radius_max), int(ymax + self.RADIUS_MULTIPLIER * radius_max)
-
-  @staticmethod
-  def crop_image(image, xmin, xmax, ymin, ymax):
-    return image.crop((xmin, ymin, xmax, ymax))
 
   def predict_light(self, cropped_roi):
     # Load CNN Model
