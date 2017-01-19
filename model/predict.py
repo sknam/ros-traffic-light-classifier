@@ -1,4 +1,5 @@
 import os
+import model as traffic_model
 
 from PIL import Image
 from keras.models import load_model
@@ -6,7 +7,7 @@ from keras.preprocessing.image import load_img, img_to_array
 
 
 def reshape_image(image):
-  x = img_to_array(image.resize((64, 64), Image.ANTIALIAS))
+  x = img_to_array(image.resize(traffic_model.IMAGE_DIMENSIONS, Image.ANTIALIAS))
   return x[None, :]
 
 model = load_model('light_classifier_model.h5')

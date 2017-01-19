@@ -1,12 +1,14 @@
 from keras.layers import Activation, Dropout, Convolution2D, MaxPooling2D, Flatten, Dense
 from keras.models import Sequential
 
+IMAGE_SHAPE = [64, 96, 3]
+IMAGE_DIMENSIONS = (64, 96)
+
 nb_classes = 3
-image_shape = [64, 64, 3]
 
 def get_model():
   model = Sequential()
-  model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=image_shape))
+  model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=IMAGE_SHAPE))
   model.add(Activation('relu'))
   model.add(Convolution2D(32, 3, 3))
   model.add(Activation('relu'))

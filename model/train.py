@@ -1,14 +1,12 @@
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import TensorBoard
-import model
-
+import model as traffic_light_model
 batch_size = 64
-nb_epoch = 25
+nb_epoch = 50
 
-model = model.get_model()
-datagen = ImageDataGenerator(width_shift_range=.2, height_shift_range=.2, shear_range=0.05, zoom_range=.1,
-                             fill_mode='nearest', rescale=1. / 255)
-image_data_gen = datagen.flow_from_directory('images', target_size=(64, 64), classes=['green', 'red', 'unknown'],
+model = traffic_light_model.get_model()
+datagen = ImageDataGenerator(width_shift_range=.3, height_shift_range=.3, shear_range=0.05, fill_mode='nearest', rescale=1. / 255, horizontal_flip=True)
+image_data_gen = datagen.flow_from_directory('images', target_size=traffic_light_model.IMAGE_DIMENSIONS, classes=['green', 'red', 'unknown'],
                                              batch_size=batch_size)
 
 tensorboard_callback = TensorBoard(log_dir='/tmp/tf-lights', histogram_freq=1)

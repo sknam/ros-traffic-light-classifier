@@ -15,6 +15,8 @@ from road_wizard.msg import Signals
 from runtime_manager.msg import traffic_light
 from sensor_msgs.msg import Image
 
+IMAGE_DIMENSIONS = (96, 64)
+
 
 class TrafficClassifier:
   RED = 0
@@ -71,7 +73,7 @@ class TrafficClassifier:
   def predict_light(self, cropped_roi):
     # Load CNN Model
     loaded_model = self.get_model()
-    image_array = img_to_array(cropped_roi.resize((64, 64), PIL.Image.ANTIALIAS))
+    image_array = img_to_array(cropped_roi.resize(IMAGE_DIMENSIONS, PIL.Image.ANTIALIAS))
     prediction = loaded_model.predict(image_array[None, :])
     if prediction[0][0] == 1:
       return self.GREEN
