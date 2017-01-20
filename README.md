@@ -4,7 +4,9 @@ The traffic light classifier node uses a combination of annotated map data and m
 
 This node relies on Autoware vector data and ROS messages. More information is located at [Autoware](https://github.com/CPFL/Autoware)
 
+Installation of [Git LFS](https://git-lfs.github.com/) is required to fetch images and weights. 
 
+This repo requires install 
 ![Preview Image](preview/ros-preview.gif)
 
 ## Setup 
